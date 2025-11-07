@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drana-Infinity</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+
+<div id="page-context" 
+     data-page-mode="{{ page_mode }}" 
+     data-active-project-id="{{ active_project_id | default('null') }}"
+     data-active-project-title="{{ active_project_title | default('null') }}">
+</div>
+
+<div id="login-modal" class="modal">
+  <div class="modal-content">
+    <h2>Welcome to Drana-Infinity</h2>
+    <p>Please enter your username to continue.</p><br>
+    <input type="text" id="username-input" placeholder="Enter your username">
+    <button id="login-btn">Start Chatting</button>
+  </div>
+</div>
+
+<div id="sidebar">
+  <div id="header">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="header-logo">
+    <span id="header-title" class="header-title">Drana-Infinity</span>
+  </div>
+  <h3 id="list-title" class="list-title-header"></h3>
+  <div id="chat-list"></div>
+  <div id="sidebar-buttons">
+    <div id="sidebar-links">
+        </div>
+    <div id="model-select-container">
+      <label for="model-select">Select Model:</label>
+      <select id="model-select"></select>
+    </div>
+    <button id="new-chat-btn"><i class="fa fa-plus"></i> New Chat</button>
+    <button id="toggle-sidebar"><i class="fa fa-angle-left"></i></button>
+  </div>
+</div>
+
+<button id="float-toggle"><i class="fa fa-angle-right"></i></button>
+
+<div id="main">
+  <div id="messages"></div>
+  <div id="input-area">
+    <div id="attached-file-display"></div>
+    <input type="file" id="file-input">
+    <button id="attach-btn"><i class="fa fa-paperclip"></i></button>
+    <textarea id="chat-input" placeholder="Ask Drana-Infinity anything..." rows="1"></textarea>
+    <button id="send-btn"><i class="fa fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<button id="settings-btn" title="Settings"><i class="fa fa-cog"></i></button>
+<div id="user-info" style="display: none;"></div> 
+
+<div id="processing-overlay">
+  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Processing...">
+</div>
+
+<div id="terminal-modal" class="modal">
+  <div class="modal-content" style="max-width: 80%;">
+    <div class="modal-header">
+        <h4>Drana-infinity</h4>
+        <button id="close-terminal-btn" class="close-btn">&times;</button>
+    </div>
+    <pre id="terminal-output"></pre>
+    <div class="terminal-actions">
+        <span id="processing-dots" class="processing-animation" style="display: none;">Processing</span>
+        <button id="rerun-btn"><i class="fas fa-redo"></i> Rerun</button>
+        <button id="copy-output-btn"><i class="fas fa-copy"></i> Copy</button>
+        <button id="save-output-btn"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="settings-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>About</h4>
+        <button id="close-settings-btn" class="close-btn">&times;</button>
+    </div>
+    <img src="{{ url_for('static', filename='images/iha089_logo.png') }}" alt="IHA089 Logo">
+    <h3>Drana-Infinity — A Creation of IHA089</h3><br>
+    <p style="font-size: 0.9rem; color: #bbb; margin-top: -5px;">
+    Built for Hackers. Powered by Intelligence.
+    </p><br>
+    <a href="https://iha089.org" target="_blank" rel="noopener noreferrer">https://iha089.org</a>
+    <hr>
+    <div class="user-details">
+      Logged in as: <span id="settings-username">username</span>
+    </div>
+    <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+  </div>
+</div>
+
+<div id="rename-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>Rename Chat</h4>
+        <button id="close-rename-btn" class="close-btn">&times;</button>
+    </div>
+    <p style="color: #ccc; text-align: left; margin-bottom: 10px;">Enter a new title for this chat:</p>
+    <input type="text" id="rename-input" placeholder="Enter new title" style="width: 100%; margin-bottom: 20px;">
+    <div class="modal-actions">
+        <button id="cancel-rename-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirm-rename-btn" class="modal-btn modal-btn-primary">Rename</button>
+    </div>
+  </div>
+</div>
+
+<div id="delete-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>Delete Chat</h4>
+        <button id="close-delete-btn" class="close-btn">&times;</button>
+    </div>
+    <p style="color: #ccc; text-align: center; margin-bottom: 20px;">Are you sure you want to delete this chat?</p>
+    <p id="delete-chat-title" style="color: #fff; font-weight: bold; background: #000; padding: 10px; border-radius: 5px; margin-bottom: 20px; word-break: break-all;"></p>
+    <div class="modal-actions">
+        <button id="cancel-delete-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirm-delete-btn" class="modal-btn modal-btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+<div id="new-project-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>New Project</h4>
+        <button id="close-new-project-btn" class="close-btn">&times;</button>
+    </div>
+    <p style="color: #ccc; text-align: left; margin-bottom: 10px;">Enter a name for your new project:</p>
+    <input type="text" id="new-project-name-input" placeholder="Enter project name" style="width: 100%; margin-bottom: 20px;">
+    <div class="modal-actions">
+        <button id="cancel-new-project-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirm-new-project-btn" class="modal-btn modal-btn-primary">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="rename-project-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>Rename Project</h4>
+        <button id="close-rename-project-btn" class="close-btn">&times;</button>
+    </div>
+    <p style="color: #ccc; text-align: left; margin-bottom: 10px;">Enter a new title for this project:</p>
+    <input type="text" id="rename-project-input" placeholder="Enter new title" style="width: 100%; margin-bottom: 20px;">
+    <div class="modal-actions">
+        <button id="cancel-rename-project-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirm-rename-project-btn" class="modal-btn modal-btn-primary">Rename</button>
+    </div>
+  </div>
+</div>
+
+<div id="delete-project-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>Delete Project</h4>
+        <button id="close-delete-project-btn" class="close-btn">&times;</button>
+    </div>
+    <p style="color: #ccc; text-align: center; margin-bottom: 20px;">Are you sure you want to delete this project? All chats inside it will also be permanently deleted.</p>
+    <p id="delete-project-title" style="color: #fff; font-weight: bold; background: #000; padding: 10px; border-radius: 5px; margin-bottom: 20px; word-break: break-all;"></p>
+    <div class="modal-actions">
+        <button id="cancel-delete-project-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirm-delete-project-btn" class="modal-btn modal-btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
