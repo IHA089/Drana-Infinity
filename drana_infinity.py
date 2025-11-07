@@ -1,15 +1,6 @@
-import subprocess
-import json
-import re
-import os
-import sqlite3
-import hashlib
-import uuid
-import secrets
-from flask import Flask, request, jsonify, render_template_string, Response, stream_with_context, make_response, send_from_directory
+import subprocess, json, re, os, sqlite3, hashlib, uuid, secrets, requests
+from flask import Flask, request, jsonify, render_template, Response, stream_with_context, make_response, send_from_directory
 from werkzeug.utils import secure_filename 
-import requests
-
 
 drana_infinity = Flask(__name__)
 DB_NAME = 'chat_database.db'
@@ -18,15 +9,27 @@ drana_infinity.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def init_db():
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
+    c.execute("PRAGMA foreign_keys = ON;")
+    
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             user_hash TEXT PRIMARY KEY,
             username TEXT NOT NULL
         )
     ''')
+    
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS projects (
+            project_id TEXT PRIMARY KEY,
+            user_hash TEXT NOT NULL,
+            title TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_hash) REFERENCES users(user_hash) ON DELETE CASCADE
+        )
+    ''')
+    
     c.execute('''
         CREATE TABLE IF NOT EXISTS chats (
             chat_id TEXT PRIMARY KEY,
@@ -34,7 +37,9 @@ def init_db():
             title TEXT NOT NULL,
             model_name TEXT NOT NULL,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(user_hash) REFERENCES users(user_hash)
+            project_id TEXT,
+            FOREIGN KEY(user_hash) REFERENCES users(user_hash) ON DELETE CASCADE,
+            FOREIGN KEY(project_id) REFERENCES projects(project_id) ON DELETE CASCADE
         )
     ''')
     c.execute('''
@@ -46,7 +51,7 @@ def init_db():
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             file_path TEXT,
             file_name TEXT,
-            FOREIGN KEY(chat_id) REFERENCES chats(chat_id)
+            FOREIGN KEY(chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE
         )
     ''')
     
@@ -57,7 +62,7 @@ def init_db():
             command TEXT NOT NULL,
             output TEXT NOT NULL,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(chat_id) REFERENCES chats(chat_id)
+            FOREIGN KEY(chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE
         )
     ''')
 
@@ -69,6 +74,11 @@ def init_db():
     try:
         c.execute("ALTER TABLE messages ADD COLUMN file_path TEXT")
         c.execute("ALTER TABLE messages ADD COLUMN file_name TEXT")
+    except sqlite3.OperationalError:
+        pass 
+        
+    try:
+        c.execute("ALTER TABLE chats ADD COLUMN project_id TEXT REFERENCES projects(project_id) ON DELETE CASCADE")
     except sqlite3.OperationalError:
         pass 
 
@@ -221,15 +231,40 @@ def get_command_output():
     else:
         return jsonify({"success": False, "message": "Output not found."}), 404
 
-
+# --- MODIFIED ROUTES ---
 @drana_infinity.route('/')
 def index():
-    try:
-        with open("index.html", "r") as f:
-            html_content = f.read()
-        return render_template_string(html_content)
-    except FileNotFoundError:
-        return "Frontend file (index.html) not found. Please ensure it's in the same directory."
+    # Renders in "chats" mode
+    return render_template('index.html', page_mode='chats', active_project_id=None, active_project_title=None)
+
+@drana_infinity.route('/projects')
+def projects_page():
+    # Renders in "projects" list mode
+    return render_template('index.html', page_mode='projects', active_project_id=None, active_project_title=None)
+
+@drana_infinity.route('/project/<project_id>')
+def project_detail_page(project_id):
+    user_hash = request.cookies.get('user_hash')
+    project_title = "Project" # Default
+    
+    if user_hash:
+        try:
+            conn = sqlite3.connect(DB_NAME)
+            c = conn.cursor()
+            c.execute("SELECT title FROM projects WHERE project_id = ? AND user_hash = ?", (project_id, user_hash))
+            project = c.fetchone()
+            conn.close()
+            if project:
+                project_title = project[0]
+            else:
+                project_title = "Unknown Project"
+        except Exception as e:
+            print(f"Error fetching project title: {e}")
+            project_title = "Error"
+
+    # Renders in "project_detail" mode, passing the title
+    return render_template('index.html', page_mode='project_detail', active_project_id=project_id, active_project_title=project_title)
+# --- END MODIFIED ROUTES ---
 
 @drana_infinity.route('/login', methods=['POST'])
 def login():
@@ -277,10 +312,26 @@ def get_chats():
     user_hash = request.cookies.get('user_hash')
     if not user_hash:
         return jsonify({"success": False, "message": "User hash not found."}), 401
+    
+    project_id = request.args.get('project_id')
+
+    if not project_id or project_id == 'null' or project_id == 'None':
+        project_id = None
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("SELECT chat_id, title, model_name FROM chats WHERE user_hash = ? ORDER BY timestamp DESC", (user_hash,))
+    
+    if project_id: 
+        c.execute(
+            "SELECT chat_id, title, model_name FROM chats WHERE user_hash = ? AND project_id = ? ORDER BY timestamp DESC", 
+            (user_hash, project_id)
+        )
+    else:
+        c.execute(
+            "SELECT chat_id, title, model_name FROM chats WHERE user_hash = ? AND project_id = 'None' ORDER BY timestamp DESC", 
+            (user_hash,)
+        )
+        
     chat_list = [{"chat_id": row[0], "title": row[1], "model_name": row[2]} for row in c.fetchall()]
     conn.close()
     return jsonify({"success": True, "chats": chat_list})
@@ -316,7 +367,6 @@ def rename_chat():
 
 @drana_infinity.route('/delete_chat', methods=['POST'])
 def delete_chat():
-    """Deletes a chat and all its associated messages from the database."""
     chat_id = request.json.get("chat_id")
     user_hash = request.cookies.get('user_hash')
     
@@ -325,7 +375,6 @@ def delete_chat():
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("DELETE FROM messages WHERE chat_id = ?", (chat_id,))
     c.execute("DELETE FROM chats WHERE chat_id = ? AND user_hash = ?", (chat_id, user_hash))
     conn.commit()
     conn.close()
@@ -333,21 +382,25 @@ def delete_chat():
     
 @drana_infinity.route('/create_new_chat', methods=['POST'])
 def create_new_chat():
-    """
-    Creates a new chat entry with a specified model and returns the new chat ID.
-    """
     user_hash = request.cookies.get('user_hash')
     model_name = request.json.get("model_name")
+    project_id = request.json.get("project_id") 
 
     if not user_hash or not model_name:
         return jsonify({"success": False, "message": "Missing user hash or model name."}), 400
+
+    if not project_id:
+        project_id = None
 
     chat_id = str(uuid.uuid4())
     default_title = "New Chat"
     
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("INSERT INTO chats (chat_id, user_hash, title, model_name) VALUES (?, ?, ?, ?)", (chat_id, user_hash, default_title, model_name))
+    c.execute(
+        "INSERT INTO chats (chat_id, user_hash, title, model_name, project_id) VALUES (?, ?, ?, ?, ?)", 
+        (chat_id, user_hash, default_title, model_name, project_id)
+    )
     conn.commit()
     conn.close()
 
@@ -392,15 +445,83 @@ def get_models():
         r = requests.get(ollama_url)
         r.raise_for_status()
         models_data = r.json()
-        models = [model['name'] for model in models_data.get('models', [])]
+        models = []
+        for model in models_data.get('models', []):
+            model_name = model['name']
+            if "drana" in model_name:
+                models.append(model_name)
         return jsonify({"success": True, "models": models})
     except requests.exceptions.RequestException as e:
         return jsonify({"success": False, "message": f"Error fetching models: {e}"}), 500
+
+@drana_infinity.route('/get_projects', methods=['GET'])
+def get_projects():
+    user_hash = request.cookies.get('user_hash')
+    if not user_hash:
+        return jsonify({"success": False, "message": "User hash not found."}), 401
+    
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("SELECT project_id, title FROM projects WHERE user_hash = ? ORDER BY timestamp DESC", (user_hash,))
+    project_list = [{"project_id": row[0], "title": row[1]} for row in c.fetchall()]
+    conn.close()
+    return jsonify({"success": True, "projects": project_list})
+
+@drana_infinity.route('/create_new_project', methods=['POST'])
+def create_new_project():
+    user_hash = request.cookies.get('user_hash')
+    project_name = request.json.get("project_name")
+
+    if not user_hash or not project_name:
+        return jsonify({"success": False, "message": "Missing user hash or project name."}), 400
+
+    project_id = str(uuid.uuid4())
+    
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO projects (project_id, user_hash, title) VALUES (?, ?, ?)", 
+        (project_id, user_hash, project_name)
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True, "project_id": project_id, "title": project_name})
+
+@drana_infinity.route('/rename_project', methods=['POST'])
+def rename_project():
+    project_id = request.json.get("project_id")
+    new_title = request.json.get("new_title")
+    user_hash = request.cookies.get('user_hash')
+
+    if not all([project_id, new_title, user_hash]):
+        return jsonify({"success": False, "message": "Missing required data."}), 400
+    
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("UPDATE projects SET title = ? WHERE chat_id = ? AND user_hash = ?", (new_title, project_id, user_hash))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
+@drana_infinity.route('/delete_project', methods=['POST'])
+def delete_project():
+    project_id = request.json.get("project_id")
+    user_hash = request.cookies.get('user_hash')
+    
+    if not all([project_id, user_hash]):
+        return jsonify({"success": False, "message": "Missing required data."}), 400
+
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("DELETE FROM projects WHERE project_id = ? AND user_hash = ?", (project_id, user_hash))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
 
 if __name__ == '__main__':
     try:
         init_db()
     except sqlite3.OperationalError:
         print("Database already initialized.")
-    drana_infinity.run(host='127.0.0.1', port=80, debug=False)
-
+    drana_infinity.run(host='127.0.0.1', port=80, debug=True)
