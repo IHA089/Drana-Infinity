@@ -28,6 +28,7 @@ def update_drana_infinity(repo_dir: str = "."):
             try:
                 repo.git.stash('save', '--include-untracked', 'Auto-stash before update')
             except GitCommandError:
+                pass
 
             print("Pulling latest version from GitHub...")
             origin.pull('main')
