@@ -266,6 +266,11 @@ async function fetchModels() {
         option.textContent = model;
         modelSelect.appendChild(option);
       });
+
+      if (data.models.length > 0) {
+        modelSelect.value = data.models[0]; 
+      }
+
     } else {
       console.error('Failed to fetch models.');
     }
