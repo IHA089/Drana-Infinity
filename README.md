@@ -48,10 +48,7 @@ cd drana-infinity
 python3 -m venv venv
 
 # Activate the environment
-# For Linux / macOS:
 source venv/bin/activate
-# For Windows:
-venv\Scripts\activate
 ```
 
 ### 3️⃣ Install All Dependencies
