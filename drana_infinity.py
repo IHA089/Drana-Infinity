@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+"""
+Drana-Infinity
+---------------------------
+Designed and maintained by IHA089.
+"""
+
 import warnings
 warnings.filterwarnings("ignore")
 import sys
