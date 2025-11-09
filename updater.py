@@ -9,7 +9,7 @@ import os
 from git import Repo, GitCommandError
 
 def update_drana_infinity(repo_dir: str = "."):
-    print("\n=== Checking for Drana-Infinity Updates ===")
+    print("\n|──(Checking for Drana-Infinity Updates)──|")
 
     if not os.path.exists(os.path.join(repo_dir, ".git")):
         print("This directory is not a Git repository. Skipping update check.")
@@ -24,7 +24,7 @@ def update_drana_infinity(repo_dir: str = "."):
         remote_commit = origin.refs.main.commit.hexsha
 
         if local_commit != remote_commit:
-            print(f"[⬆️] Update found!")
+            print(f"Update found!")
             try:
                 repo.git.stash('save', '--include-untracked', 'Auto-stash before update')
             except GitCommandError:
