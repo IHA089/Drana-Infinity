@@ -1,4 +1,10 @@
+import warnings
+warnings.filterwarnings("ignore")
+import sys
+sys.modules['warnings'] = warnings
+
 import subprocess, json, re, os, sqlite3, hashlib, uuid, secrets, requests
+from waitress import serve
 from flask import Flask, request, jsonify, render_template, Response, stream_with_context, make_response, send_from_directory
 from werkzeug.utils import secure_filename 
 
@@ -231,21 +237,18 @@ def get_command_output():
     else:
         return jsonify({"success": False, "message": "Output not found."}), 404
 
-# --- MODIFIED ROUTES ---
 @drana_infinity.route('/')
 def index():
-    # Renders in "chats" mode
     return render_template('index.html', page_mode='chats', active_project_id=None, active_project_title=None)
 
 @drana_infinity.route('/projects')
 def projects_page():
-    # Renders in "projects" list mode
     return render_template('index.html', page_mode='projects', active_project_id=None, active_project_title=None)
 
 @drana_infinity.route('/project/<project_id>')
 def project_detail_page(project_id):
     user_hash = request.cookies.get('user_hash')
-    project_title = "Project" # Default
+    project_title = "Project" 
     
     if user_hash:
         try:
@@ -262,9 +265,7 @@ def project_detail_page(project_id):
             print(f"Error fetching project title: {e}")
             project_title = "Error"
 
-    # Renders in "project_detail" mode, passing the title
     return render_template('index.html', page_mode='project_detail', active_project_id=project_id, active_project_title=project_title)
-# --- END MODIFIED ROUTES ---
 
 @drana_infinity.route('/login', methods=['POST'])
 def login():
@@ -327,8 +328,8 @@ def get_chats():
             (user_hash, project_id)
         )
     else:
-        c.execute(
-            "SELECT chat_id, title, model_name FROM chats WHERE user_hash = ? AND project_id = 'None' ORDER BY timestamp DESC", 
+         c.execute(
+            "SELECT chat_id, title, model_name FROM chats WHERE user_hash = ? AND (project_id IS NULL OR project_id = 'None') ORDER BY timestamp DESC", 
             (user_hash,)
         )
         
@@ -389,7 +390,7 @@ def create_new_chat():
     if not user_hash or not model_name:
         return jsonify({"success": False, "message": "Missing user hash or model name."}), 400
 
-    if not project_id:
+    if not project_id or project_id == 'null' or project_id == 'None':
         project_id = None
 
     chat_id = str(uuid.uuid4())
@@ -499,7 +500,7 @@ def rename_project():
     
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("UPDATE projects SET title = ? WHERE chat_id = ? AND user_hash = ?", (new_title, project_id, user_hash))
+    c.execute("UPDATE projects SET title = ? WHERE project_id = ? AND user_hash = ?", (new_title, project_id, user_hash))
     conn.commit()
     conn.close()
     return jsonify({"success": True})
@@ -524,4 +525,6 @@ if __name__ == '__main__':
         init_db()
     except sqlite3.OperationalError:
         print("Database already initialized.")
-    drana_infinity.run(host='127.0.0.1', port=80, debug=True)
+    
+    print("Drana-Infinity server is running on ::: http://127.0.0.1:80")
+    serve(drana_infinity, host='127.0.0.1', port=80)
