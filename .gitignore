@@ -1,0 +1,11 @@
+uploads/
+__pycache__/
+chat_database.db
+
+!*.py
+!.version
+!README.md
+!.gitignore
+!requirements.txt
+!templates/
+!static/
