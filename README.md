@@ -97,3 +97,10 @@ python3 drana_infinity.py
 
 <img width="1920" height="1051" alt="image" src="https://github.com/user-attachments/assets/6f61ca41-96a6-4841-a467-351e1b80ca15" />
 
+
+---
+
+
+<img width="1920" height="1051" alt="image" src="https://github.com/user-attachments/assets/af36797b-b6a1-4cb4-ba62-41d57682023b" />
+
+
