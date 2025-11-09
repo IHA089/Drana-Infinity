@@ -8,6 +8,13 @@ from waitress import serve
 from flask import Flask, request, jsonify, render_template, Response, stream_with_context, make_response, send_from_directory
 from werkzeug.utils import secure_filename 
 
+try:
+    from updater import update_drana_infinity
+    update_drana_infinity()
+except Exception as e:
+    print(f"[Update Check Failed] {e}")
+
+
 drana_infinity = Flask(__name__)
 DB_NAME = 'chat_database.db'
 UPLOAD_FOLDER = 'uploads' 
