@@ -3,3 +3,4 @@ waitress==3.0.0
 requests==2.32.3
 Werkzeug==3.0.4
 GitPython
+waitress
