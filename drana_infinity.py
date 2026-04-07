@@ -109,6 +109,22 @@ def start_proxy_engine():
     except Exception as e:
         print(f"[!] Failed to start proxy engine: {e}")
 
+def ensure_browser_setup():
+    chrome_dir = os.path.join(os.path.dirname(__file__), "chrome-linux64")
+    driver_bin = os.path.join(os.path.dirname(__file__), "chromedriver")
+    
+    if not os.path.exists(chrome_dir) or not os.path.exists(driver_bin):
+        print("[!] Portable Chrome or Driver missing. Running setup_browser.py...")
+        if not os.path.exists("setup_browser.py"):
+            print("[-] Error: 'setup_browser.py' not found. Cannot auto-setup.")
+            return
+
+        try:
+            subprocess.run([sys.executable, "setup_browser.py"], check=True)
+        except Exception as e:
+            print(f"[-] Error running setup_browser.py: {e}")
+            sys.exit(1)
+
 def stop_proxy_engine():
     global PROXY_PROCESS
     if PROXY_PROCESS:
@@ -1505,6 +1521,7 @@ def start_crawler():
         return jsonify({"success": False, "message": str(e)})
 
 if __name__ == '__main__':
+    ensure_browser_setup()
     try:
         drana_backend.init_db()
     except sqlite3.OperationalError as e:
