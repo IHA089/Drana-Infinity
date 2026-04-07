@@ -1,0 +1,427 @@
+/* =========================================
+   DRANA-INFINITY // SYSTEM ARSENAL THEME
+   ========================================= */
+
+:root {
+    /* Colors extracted from your images */
+    --color-bg: #030303;
+    --color-card-bg: rgba(0, 0, 0, 0.7); /* Slightly transparent to show wallpaper */
+    
+    /* The Gradient Colors */
+    --color-cyan: #00E5FF;
+    --color-purple: #D500F9;
+    
+    /* Text */
+    --color-text-main: #ffffff;
+    --color-text-muted: #8899a6;
+    
+    /* Fonts */
+    --font-brand: 'Roboto', sans-serif; /* For the main Logo Text */
+    --font-mono: 'Fira Code', 'Courier New', monospace; /* For UI/Data */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* --- Fixed Background Layer --- */
+.rag-bg-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Optional: Darken the wallpaper slightly so text is readable */
+    filter: brightness(0.6); 
+}
+
+/* --- Navigation --- */
+.rag-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 35px;
+    margin-bottom: 20px;
+}
+
+.rag-nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.rag-logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+.rag-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+/* THE GRADIENT TEXT STYLE */
+.rag-brand-gradient {
+    /* font-family: var(--font-brand);
+    font-weight: 900;
+    font-size: 17px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    
+    background: linear-gradient(90deg, var(--color-cyan) 0%, var(--color-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    
+    filter: drop-shadow(0 0 5px rgba(213, 0, 249, 0.3)); */
+    font-size: 17px;
+    font-weight: 800;
+    align-self: center;
+    background: linear-gradient(90deg, #00ccff 0%, #2b6eff 50%, #a200ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Buttons --- */
+.rag-btn {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--color-text-muted);
+    color: var(--color-text-muted);
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+
+.rag-btn:hover {
+    border-color: var(--color-text-main);
+    color: var(--color-text-main);
+    background: rgba(255,255,255,0.1);
+}
+
+.rag-btn.primary {
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
+}
+
+.rag-btn.primary:hover {
+    background: rgba(0, 229, 255, 0.15);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.rag-btn.full-width {
+    width: 100%;
+    justify-content: center;
+}
+
+/* --- Layout --- */
+.rag-shell {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+}
+
+.rag-section-header {
+    margin-bottom: 30px;
+    border-left: 3px solid var(--color-purple);
+    padding-left: 15px;
+}
+
+.rag-section-header h2 {
+    font-size: 24px;
+    margin: 0 0 5px 0;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+.rag-section-header p {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.rag-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 25px;
+}
+
+@media (max-width: 900px) {
+    .rag-grid { grid-template-columns: 1fr; }
+}
+
+.rag-column {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* --- Cards --- */
+.rag-card {
+    background-color: var(--color-card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(0, 229, 255, 0.5); /* Cyan top border accent */
+    border-radius: 6px;
+    padding: 25px;
+    position: relative;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rag-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+    border-top-color: var(--color-cyan);
+}
+
+.rag-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.rag-card-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rag-card-icon i {
+    color: var(--color-cyan);
+    font-size: 20px;
+}
+
+.rag-header-text h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+.status-text {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+/* Utilities */
+.text-cyan { color: var(--color-cyan); text-shadow: 0 0 8px rgba(0, 229, 255, 0.6); }
+.text-purple { color: var(--color-purple); text-shadow: 0 0 8px rgba(213, 0, 249, 0.6); }
+
+/* --- Forms & Inputs --- */
+.rag-form-group {
+    margin-bottom: 15px;
+}
+
+.rag-form-group label {
+    display: block;
+    font-size: 10px;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+input, textarea, select {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 12px;
+    border-radius: 4px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+}
+
+/* --- Collections List --- */
+.rag-collections-list {
+    max-height: 250px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 5px;
+}
+
+.rag-collection-item {
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.rag-collection-item:hover {
+    border-color: var(--color-cyan);
+    background: rgba(0, 229, 255, 0.05);
+}
+
+.rag-collection-item.active {
+    border-color: var(--color-purple);
+    background: rgba(213, 0, 249, 0.05);
+    box-shadow: 0 0 15px rgba(213, 0, 249, 0.1);
+}
+
+.rag-collection-item.active .rag-collection-name {
+    color: var(--color-purple);
+    font-weight: 700;
+}
+
+/* --- Tables --- */
+.rag-table-wrapper {
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.rag-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.rag-table th {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-cyan);
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    font-weight: 600;
+}
+
+.rag-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ccc;
+}
+
+/* --- Search Results --- */
+.rag-results-box {
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.rag-search-item {
+    background: rgba(0, 0, 0, 0.4);
+    border-left: 2px solid var(--color-cyan);
+    padding: 15px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    border-radius: 0 4px 4px 0;
+}
+
+.rag-search-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--color-text-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.rag-search-score { color: var(--color-cyan); }
+
+/* --- Special Active Card --- */
+.active-status-card {
+    border-top-color: var(--color-purple);
+}
+.active-status-card:hover {
+    border-top-color: var(--color-purple);
+}
+.active-status-card .rag-card-icon i {
+    color: var(--color-purple);
+}
+.rag-card-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 11px;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    text-align: right;
+}
+
+.rag-controls-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    margin-top: 15px;
+}
+.rag-select-wrap {
+    flex: 1;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-cyan); }
+
+.centered-shell {
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.locked-card {
+    text-align: center;
+    max-width: 400px;
+    border-top-color: var(--color-purple);
+}
+.rag-card-icon-lg {
+    font-size: 40px;
+    color: var(--color-purple);
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(213, 0, 249, 0.5);
+}
