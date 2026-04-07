@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DRANA-INFINITY – RAG Arsenal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/rag.css') }}">
+</head>
+<body>
+
+<div class="rag-bg-layer" style="background-image: url('{{ url_for('static', filename='images/background.png') }}');"></div>
+
+<div id="rag-root" data-logged-in="{{ '1' if is_logged_in else '0' }}">
+
+  <header class="rag-nav">
+    <div class="rag-nav-left">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="rag-logo">
+      
+      <div class="rag-brand-text">
+        <span class="rag-brand-gradient">DRANA-INFINITY</span>
+      </div>
+    </div>
+    
+    <div class="rag-nav-right">
+      <a href="/" class="rag-btn">
+        <i class="fa fa-arrow-left"></i>
+        CORE
+      </a>
+    </div>
+  </header>
+
+  {% if not is_logged_in %}
+  <main class="rag-shell centered-shell">
+    <section class="rag-card locked-card">
+      <div class="rag-card-icon-lg">
+        <i class="fa fa-lock"></i>
+      </div>
+      <h1 class="text-purple">ACCESS DENIED</h1>
+      <p>Authentication token missing. Please log in to Drana-Infinity core.</p>
+    </section>
+  </main>
+  {% else %}
+
+  <main class="rag-shell">
+    
+    <div class="rag-section-header">
+      <h2>RAG INTEL VAULT</h2>
+      <p>Curate private research, docs, and payload notes for offline AI assistance.</p>
+    </div>
+
+    <section class="rag-grid">
+
+      <div class="rag-column">
+
+        <article class="rag-card">
+          <div class="rag-card-header">
+            <div class="rag-card-icon">
+              <i class="fa fa-folder-plus"></i>
+            </div>
+            <div class="rag-header-text">
+              <h3>NEW COLLECTION</h3>
+              <span class="status-text">STATUS: <span class="text-cyan">READY</span></span>
+            </div>
+          </div>
+          <div class="rag-card-body">
+            <div class="rag-form-group">
+              <label>COLLECTION ID</label>
+              <input id="rag-collection-name" type="text" placeholder="e.g. nmap_scans">
+            </div>
+            <div class="rag-form-group">
+              <label>MANIFEST</label>
+              <textarea id="rag-collection-desc" rows="1" placeholder="Description..."></textarea>
+            </div>
+            <button id="rag-create-collection" class="rag-btn primary full-width">
+              <i class="fa fa-plus"></i> INITIALIZE
+            </button>
+            <p id="rag-create-status" class="rag-status"></p>
+          </div>
+        </article>
+
+        <article class="rag-card">
+          <div class="rag-card-header">
+            <div class="rag-card-icon">
+              <i class="fa fa-database"></i>
+            </div>
+            <div class="rag-header-text">
+              <h3>VAULTS</h3>
+              <span class="status-text">STATUS: <span class="text-cyan">ONLINE</span></span>
+            </div>
+          </div>
+          <div class="rag-card-body">
+            <div id="rag-collections-list" class="rag-collections-list">
+              </div>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="rag-column">
+
+        <article class="rag-card active-status-card">
+          <div class="rag-card-header">
+            <div class="rag-card-icon">
+              <i class="fa fa-microchip"></i>
+            </div>
+            <div class="rag-header-text">
+              <h3 id="rag-active-name" class="text-purple">NO TARGET SELECTED</h3>
+              <span id="rag-active-desc" class="status-text">Select a vault to engage RAG protocols.</span>
+            </div>
+          </div>
+          <div class="rag-card-footer">
+            <span id="rag-active-doc-count">DOCUMENTS: 0</span>
+          </div>
+        </article>
+
+        <article class="rag-card">
+          <div class="rag-card-header">
+            <div class="rag-card-icon">
+              <i class="fa fa-upload"></i>
+            </div>
+            <div class="rag-header-text">
+              <h3>DATA INGESTION</h3>
+              <span class="status-text">STATUS: <span class="text-cyan">IDLE</span></span>
+            </div>
+          </div>
+          <div class="rag-card-body">
+            <div class="rag-upload-row">
+              <input type="file" id="rag-file-input" multiple>
+              <button id="rag-upload-btn" class="rag-btn primary">
+                UPLOAD
+              </button>
+            </div>
+            <p id="rag-upload-status" class="rag-status"></p>
+
+            <div class="rag-table-wrapper">
+              <table class="rag-table">
+                <thead>
+                  <tr>
+                    <th>FILE</th>
+                    <th>TYPE</th>
+                    <th>SIZE</th>
+                  </tr>
+                </thead>
+                <tbody id="rag-docs-tbody">
+                  </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="rag-card">
+          <div class="rag-card-header">
+            <div class="rag-card-icon">
+              <i class="fa fa-terminal"></i>
+            </div>
+            <div class="rag-header-text">
+              <h3>VECTOR SEARCH</h3>
+              <span class="status-text">MODE: <span class="text-cyan">QUERY</span></span>
+            </div>
+          </div>
+          <div class="rag-card-body">
+            <div class="rag-form-group">
+              <textarea id="rag-search-input" rows="2" placeholder="Enter query parameters..."></textarea>
+            </div>
+            <div class="rag-controls-row">
+              <div class="rag-select-wrap">
+                <label>TOP K:</label>
+                <select id="rag-top-k">
+                  <option value="3">3</option>
+                  <option value="5" selected>5</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <button id="rag-search-btn" class="rag-btn primary">
+                <i class="fa fa-search"></i> EXECUTE
+              </button>
+            </div>
+            <p id="rag-search-status" class="rag-status"></p>
+            <div id="rag-search-results" class="rag-results-box">
+              </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </main>
+  {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/rag.js') }}"></script>
+</body>
+</html>

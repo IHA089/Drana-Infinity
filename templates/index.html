@@ -3,11 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drana-Infinity</title>
+<title>DRANA-INFINITY</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.js"></script>
+<script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+<script src="https://unpkg.com/cytoscape-node-html-label/dist/cytoscape-node-html-label.min.js"></script>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
@@ -36,13 +42,20 @@
   <h3 id="list-title" class="list-title-header"></h3>
   <div id="chat-list"></div>
   <div id="sidebar-buttons">
-    <div id="sidebar-links">
-        </div>
     <div id="model-select-container">
       <label for="model-select">Select Model:</label>
       <select id="model-select"></select>
     </div>
+    
     <button id="new-chat-btn"><i class="fa fa-plus"></i> New Chat</button>
+    
+    <!-- [UPDATED] Added Chats Button -->
+    <button id="view-chats-btn" style="display: none;"><i class="fa fa-comments"></i> Chats</button>
+    
+    <button id="view-projects-btn"><i class="fa fa-folder"></i> Projects</button>
+    
+    <button id="new-project-btn" style="display: none;"><i class="fa fa-plus"></i> New Project</button>
+
     <button id="toggle-sidebar"><i class="fa fa-angle-left"></i></button>
   </div>
 </div>
@@ -50,17 +63,50 @@
 <button id="float-toggle"><i class="fa fa-angle-right"></i></button>
 
 <div id="main">
-  <div id="messages"></div>
+  
+  <div id="graph-container" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10;"></div>
+  
+  <!-- CUSTOM CONTEXT MENU FOR GRAPH NODES -->
+  <div id="graph-context-menu" class="context-menu">
+      <div class="context-menu-item" id="ctx-new-node"><i class="fa fa-plus"></i> Create New Node</div>
+      <div class="context-menu-item" id="ctx-rename-node"><i class="fa fa-edit"></i> Rename Node</div>
+      <div class="context-menu-item" id="ctx-delete-node" style="color: #ff0055;"><i class="fa fa-trash"></i> Delete Node</div>
+  </div>
+
+  <div id="messages">
+     </div>
+
   <div id="input-area">
     <div id="attached-file-display"></div>
     <input type="file" id="file-input">
+    
+    <button id="web-search-btn" title="Toggle Web Search"><i class="fa fa-globe"></i></button>
+
     <button id="attach-btn"><i class="fa fa-paperclip"></i></button>
     <textarea id="chat-input" placeholder="Ask Drana-Infinity anything..." rows="1"></textarea>
     <button id="send-btn"><i class="fa fa-paper-plane"></i></button>
   </div>
 </div>
 
-<button id="settings-btn" title="Settings"><i class="fa fa-cog"></i></button>
+
+<div class="cyber-toolbar">
+    <button id="interceptor-btn" title="Interceptor Engine">
+        <i class="fa-brands fa-squarespace"></i>
+    </button>
+    
+    <button id="rag-btn" title="RAG Memory">
+        <i class="fa-solid fa-microchip"></i>
+    </button>
+    
+    <button id="tools-btn" title="System Tools">
+        <i class="fa-solid fa-toolbox"></i>
+    </button>
+    
+    <button id="settings-btn" title="Global Settings">
+        <i class="fa-solid fa-cog"></i>
+    </button>
+</div>
+
 <div id="user-info" style="display: none;"></div> 
 
 <div id="processing-overlay">
@@ -132,17 +178,52 @@
     </div>
   </div>
 </div>
+
 <div id="new-project-modal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
         <h4>New Project</h4>
         <button id="close-new-project-btn" class="close-btn">&times;</button>
     </div>
-    <p style="color: #ccc; text-align: left; margin-bottom: 10px;">Enter a name for your new project:</p>
-    <input type="text" id="new-project-name-input" placeholder="Enter project name" style="width: 100%; margin-bottom: 20px;">
-    <div class="modal-actions">
+    
+    <p style="color: #ccc; text-align: left; margin-bottom: 5px;">Project Name:</p>
+    <input type="text" id="new-project-name-input" placeholder="Enter project name" style="width: 100%; margin-bottom: 15px;">
+    
+    <p style="color: #ccc; text-align: left; margin-bottom: 5px;">Project Type:</p>
+    <select id="new-project-type-select">
+        <option value="">Default (None)</option>
+        <option value="web_app_testing">Web App Testing</option>
+    </select>
+    <div class="modal-actions" style="margin-top: 20px;">
         <button id="cancel-new-project-btn" class="modal-btn modal-btn-secondary">Cancel</button>
         <button id="confirm-new-project-btn" class="modal-btn modal-btn-primary">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="scan-setup-modal" class="modal">
+  <div class="modal-content" style="text-align: left;">
+    <div class="modal-header">
+        <h4><i class="fa fa-crosshairs"></i> New Target Scan</h4>
+        <button id="close-scan-modal-btn" class="close-btn">&times;</button>
+    </div>
+    
+    <label style="color:#0ff; font-size: 12px; font-weight: bold;">TARGET DOMAIN / URL</label>
+    <input type="text" id="scan-target-input" placeholder="e.g. example.com" style="margin-top: 5px;">
+
+    <p style="color: #ccc; margin: 15px 0 10px 0; border-bottom: 1px solid #333; padding-bottom:5px; font-weight: bold;">SCAN MODULES</p>
+    
+    <div class="checkbox-group" style="display: flex; flex-direction: column; gap: 10px;">
+        <label><input type="checkbox" id="opt-tech"> <i class="fa fa-code" style="width:20px;"></i> Detect Technology</label>
+        <label><input type="checkbox" id="opt-subdomain"> <i class="fa fa-sitemap" style="width:20px;"></i> Find Subdomains</label>
+        <label><input type="checkbox" id="opt-urls"> <i class="fa fa-link" style="width:20px;"></i> Extract URLs</label>
+        <label><input type="checkbox" id="opt-ports"> <i class="fa fa-network-wired" style="width:20px;"></i> Service & Ports</label>
+        <label><input type="checkbox" id="opt-waf"> <i class="fa fa-shield-alt" style="width:20px;"></i> Detect WAF</label>
+    </div>
+
+    <div class="modal-actions">
+        <button id="cancel-scan-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="start-scan-btn" class="modal-btn modal-btn-primary">Start Mapping</button>
     </div>
   </div>
 </div>
@@ -176,7 +257,65 @@
     </div>
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<div id="node-content-modal" class="modal">
+  <div class="modal-content" style="max-width: 500px; text-align: left;">
+    <div class="modal-header">
+        <h4 id="node-modal-title"><i class="fa fa-list"></i> Select Output</h4>
+        <button id="close-node-modal-btn" class="close-btn">&times;</button>
+    </div>
+    
+    <p style="font-size: 12px; color: #888; margin-bottom: 10px;">
+        Double-click a line below to set it as the node's main display.
+    </p>
+
+    <div id="node-filtered-list" class="node-selection-list">
+        </div>
+
+    <div class="modal-actions" style="border-top: 1px solid #333; margin-top: 15px; padding-top: 10px;">
+        <button id="view-raw-log-btn" class="modal-btn modal-btn-secondary" style="font-size: 11px;">
+            <i class="fa fa-terminal"></i> View Raw Terminal Log
+        </button>
+    </div>
+  </div>
+</div>
+
+<!-- RENAME NODE MODAL -->
+<div id="rename-node-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>Rename Node</h4>
+        <button id="close-rename-node-btn" class="close-btn">&times;</button>
+    </div>
+    <input type="text" id="node-rename-input" placeholder="Enter new node name">
+    <div class="modal-actions">
+        <button id="cancel-rename-node-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirm-rename-node-btn" class="modal-btn modal-btn-primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MANUAL NODE MODAL -->
+<div id="add-manual-node-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h4>Create New Node</h4>
+        <button id="close-manual-node-btn" class="close-btn">&times;</button>
+    </div>
+    <label style="color:#ccc; font-size:12px;">Node Label</label>
+    <input type="text" id="manual-node-label" placeholder="e.g. Admin Panel">
+    
+    <label style="color:#ccc; font-size:12px;">Content / Description</label>
+    <input type="text" id="manual-node-content" placeholder="e.g. Found via brute force">
+    
+    <div class="modal-actions">
+        <button id="cancel-manual-node-btn" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirm-manual-node-btn" class="modal-btn modal-btn-primary">Create</button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js', v='1') }}"></script>
 
 </body>
 </html>

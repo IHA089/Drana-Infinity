@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DRANA-INFINITY // REPORT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/rag.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="rag-bg-layer" style="background-image: url('{{ url_for('static', filename='images/background.png') }}');"></div>
+
+<div id="report-root" data-flow-id="{{ flow_id }}">
+
+  <header class="rag-nav">
+    <div class="rag-nav-left">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="rag-logo">
+      <div class="rag-brand-text">
+        <span class="rag-brand-gradient">DRANA-INFINITY</span>
+      </div>
+    </div>
+    <div class="rag-nav-right">
+      <a href="/" class="rag-btn">
+        <i class="fa fa-arrow-left"></i> CORE SYSTEM
+      </a>
+    </div>
+  </header>
+
+  <main class="rag-shell full-height-shell">
+    
+    <div class="report-top-bar">
+      <div class="report-meta">
+        <h2 class="text-cyan">INTEL REPORT GENERATOR</h2>
+        <span class="status-text">FLOW ID: <span class="text-purple">{{ flow_id }}</span></span>
+        <span id="status-text" class="status-text" style="margin-left: 15px;">SYSTEM READY</span>
+      </div>
+
+      <div class="report-tabs">
+        <button class="rag-btn tab-btn active" data-target="edit-mode">
+          <i class="fa fa-terminal"></i> RAW / EDIT
+        </button>
+        <button class="rag-btn tab-btn" data-target="render-mode">
+          <i class="fa fa-eye"></i> RENDER
+        </button>
+      </div>
+    </div>
+
+    <section class="rag-card report-card">
+      
+      <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner-box">
+          <div class="neon-spinner"></div>
+          <p class="blink-text">GENERATING FROM FLOW...</p>
+        </div>
+      </div>
+
+      <div id="edit-mode" class="report-content-layer active">
+        <textarea id="report-editor" class="report-textarea" spellcheck="false" placeholder="Waiting for flow analysis..."></textarea>
+      </div>
+
+      <div id="render-mode" class="report-content-layer">
+        <div id="report-preview" class="markdown-body"></div>
+      </div>
+
+      <div class="report-fab-container">
+        <button id="btn-copy" class="rag-btn" title="Copy Markdown">
+          <i class="fa fa-copy"></i> COPY MD
+        </button>
+        <button id="btn-pdf" class="rag-btn primary" title="Export PDF">
+          <i class="fa fa-file-pdf"></i> EXPORT PDF
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRANA-INFINITY – TOOLS Arsenal</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+  body {
+    display: block; 
+    overflow-y: auto; 
+    height: auto;
+    min-height: 100vh;
+  }
+
+  #main {
+    width: 100%;
+    max-width: 1400px; 
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .fa-spin-fast {
+    -webkit-animation: fa-spin 1s infinite linear;
+    animation: fa-spin 1s infinite linear;
+  }
+</style>
+</head>
+<body>
+  <header class="tool-nav">
+    <div class="tool-nav-left">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="tool-logo">
+      
+      <div class="tool-brand-text">
+        <span class="tool-brand-gradient">DRANA-INFINITY</span>
+      </div>
+    </div>
+    
+    <div class="tool-nav-right">
+      <a href="/" class="tool-btn">
+        <i class="fa fa-arrow-left"></i>
+        CORE
+      </a>
+    </div>
+  </header>
+
+<div id="main">
+  
+  <div class="modern-header">
+    <h2>TOOLS ARSENAL</h2>
+    <p>Manage all security tools required for your local offensive environment.</p>
+  </div>
+
+  <div class="modern-grid">
+    {% for tool in tools_data %}
+      <div class="modern-card" id="card-{{ tool.id }}" data-tool-id="{{ tool.id }}">
+        
+        <div class="card-icon-box icon-inactive" id="icon-box-{{ tool.id }}">
+           <i class="{{ tool.icon_class or tool.icon }}"></i>
+        </div>
+
+        <h3 class="card-title">{{ tool.tool_name or tool.name }}</h3>
+
+        <div class="card-content" id="content-{{ tool.id }}">
+            <div class="card-desc">
+              Status: <span style="color: #dba106;"><i class="fa fa-circle-notch fa-spin-fast"></i> Checking...</span>
+            </div>
+        </div>
+        
+        <input type="hidden" id="link-{{ tool.id }}" value="{{ tool.install_link or tool.link }}">
+        
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const cards = document.querySelectorAll('.modern-card');
+
+    cards.forEach(card => {
+        const toolId = card.getAttribute('data-tool-id');
+        const iconBox = document.getElementById(`icon-box-${toolId}`);
+        const contentBox = document.getElementById(`content-${toolId}`);
+        const installLink = document.getElementById(`link-${toolId}`).value;
+
+        fetch(`/api/check_tool/${toolId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.installed) {
+                iconBox.classList.remove('icon-inactive');
+                iconBox.classList.add('icon-active'); 
+                
+                contentBox.innerHTML = `
+                    <div class="card-desc">
+                      Status: <span class="status-text-ok">Operational</span>
+                      <span class="version-text">${data.version}</span>
+                    </div>
+                `;
+            } else {
+                iconBox.classList.remove('icon-active');
+                iconBox.classList.add('icon-inactive'); 
+                
+                contentBox.innerHTML = `
+                    <div class="card-desc">
+                      Status: <span class="status-text-err">Missing</span><br>
+                      Required for system modules.
+                    </div>
+                    <a href="${installLink}" target="_blank" class="card-action-link">
+                      Install Now <i class="fa fa-arrow-right"></i>
+                    </a>
+                `;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            contentBox.innerHTML = `<span style="color:red">Error checking status</span>`;
+        });
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "WAF": {
+    "1": {
+      "command": "wafw00f <target>",
+      "prompt": "You are a strict parser. Read the <output> from wafw00f and return ONLY this JSON:\n{\"detected\": true or false, \"firewall\": [\"firewall_name\"]}\n\nRules you must follow:\n1. Never return “WAFW00F”, “WAF”, “Generic Detection”, or any tool name as the firewall.\n2. If wafw00f output shows a specific firewall vendor (example: Cloudflare, Akamai, F5, Imperva, Sucuri, Fortinet, ModSecurity, Fastly, Radware, AWS WAF, Azure WAF), then:\n   - detected = true\n   - firewall = [exact vendor name from output]\n3. If the output only mentions “Generic Detection”, “unknown”, “could be a WAF”, or no firewall name:\n   - detected = false\n   - firewall = []\n4. Do not infer or guess any firewall not explicitly shown in the output.\n5. Your answer must be valid JSON only, with no explanation and no extra text.\n\n<output>\nOUTPUT_HERE\n</output>",
+      "output": "firewall",
+      "result": "No WAF",
+      "mslec": 1
+    },
+    "2": {
+      "command": "nmap -A -p80,443 --script http-waf* <target>",
+      "prompt": "You are a strict parser. Read the <output> from wafw00f and return ONLY this JSON:\n{\"detected\": true or false, \"firewall\": [\"firewall_name\"]}\n\nRules you must follow:\n1. Never return “WAFW00F”, “WAF”, “Generic Detection”, or any tool name as the firewall.\n2. If wafw00f output shows a specific firewall vendor (example: Cloudflare, Akamai, F5, Imperva, Sucuri, Fortinet, ModSecurity, Fastly, Radware, AWS WAF, Azure WAF), then:\n   - detected = true\n   - firewall = [exact vendor name from output]\n3. If the output only mentions “Generic Detection”, “unknown”, “could be a WAF”, or no firewall name:\n   - detected = false\n   - firewall = []\n4. Do not infer or guess any firewall not explicitly shown in the output.\n5. Your answer must be valid JSON only, with no explanation and no extra text.\n\n<output>\nOUTPUT_HERE\n</output>",
+      "output": "firewall",
+      "result": "No WAF",
+      "mslec": 1
+    }
+  },
+  "PORTSCAN": {
+    "1": {
+      "command": "nmap <target>",
+      "prompt": "You are a strict parser. Read the <output> from nmap and return ONLY this JSON:\n{\"detected\": True if any port is NOT closed otherwise False, \"ports\": [\"PORT    STATE    SERVICE\", \"PORT    STATE    SERVICE\", ...]}\n\nRules you must follow:\n1. Include every port line where STATE is NOT \"closed\". Allowed examples:\n   - \"80/tcp   open   http\"\n   - \"443/tcp  filtered   https\"\n   - \"22/tcp   open|filtered   ssh\"\n   - \"53/tcp   unknown   domain\"\n2. Exclude only ports where the state is strictly \"closed\".\n3. If no non-closed ports exist:\n   - detected = False\n   - ports = []\n4. If one or more non-closed ports exist:\n   - detected = True\n   - ports = [each matching port line EXACTLY as it appears]\n5. Do not infer or guess ports not shown in the output.\n6. Your answer must be valid JSON only, with no explanation and no extra text.\n\n<output>\nOUTPUT_HERE\n</output>",
+      "output": "ports",
+      "result": "No open ports",
+      "mslec": 1
+    }
+  },
+  "WEBTECH":{
+    "1":{
+      "command":"webanalyze -host <target> -apps go_tool_json/technologies.json -silent",
+      "prompt":"You are a strict parser. Read the <output> from webanalyze and return ONLY this JSON:\n{\"detected\": True if any technologies are found otherwise False, \"technologies\": [\"TechnologyName Version (Category)\", \"TechnologyName Version (Category)\", ...]}\n\nRules you must follow:\n1. Extract each technology EXACTLY as shown in the output, preserving:\n   - name\n   - version (if present)\n   - category inside parentheses\n   Example formats to extract:\n   - \"WordPress, 6.8.3 (CMS, Blogs)\"\n   - \"PHP, 8.2.27 (Programming languages)\"\n   - \"Hostinger CDN,  (CDN)\"\n2. Remove all extra spaces at the end but DO NOT modify the original wording.\n3. If the output contains one or more technologies:\n   - detected = True\n   - technologies = [every technology line EXACTLY as it appears]\n4. If the output contains no recognizable technologies:\n   - detected = False\n   - technologies = []\n5. Do NOT infer or guess technologies that are not explicitly shown.\n6. Your answer must be valid JSON only, with no explanation and no extra text.\n\n<output>\nOUTPUT_HERE\n</output>",
+      "output":"technologies",
+      "result":"No Technologies Detected",
+      "mslec": 0
+    }
+  },
+  "SUBDOMAIN":{
+    "1":{
+      "command":"subfinder -d <target> -silent",
+      "prompt":"",
+      "output":"",
+      "result":"",
+      "mslec": 1
+    }
+  },
+  "GETURL":{
+    "1":{
+      "command":"waybackurls <target>",
+      "prompt":"",
+      "output":"",
+      "result":"",
+      "mslec": 1
+    }
+  }
+}

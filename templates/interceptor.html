@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DRANA-INFINITY – INTERCEPTOR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/interceptor.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+    <div class="nav-left">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="nav-logo">
+      <div class="brand-text">
+        <span class="brand-gradient">DRANA-INFINITY</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button id="method-filter-btn" class="method-filter-btn" title="Filter by HTTP method">
+        <i class="fa-solid fa-filter"></i> METHODS
+      </button>
+      
+      <button id="status-filter-btn" class="status-filter-btn" title="Filter by status code">
+        <i class="fa-solid fa-shield"></i> STATUS
+      </button>
+      
+      <button id="filetype-filter-btn" class="filetype-filter-btn" title="Filter by file type">
+        <i class="fa-solid fa-file"></i> FILE TYPE
+      </button>
+      
+      <a href="/" class="core-btn">
+        <i class="fa fa-arrow-left"></i> CORE
+      </a>
+    </div>
+    </nav>
+
+    <div id="method-filter-container" class="method-filter-container">
+        <div id="method-filter-popup" class="method-filter-popup">
+            <div class="popup-header">
+                <span>Filter Methods</span>
+                <button class="popup-close-btn" onclick="closeMethodFilterPopup()">×</button>
+            </div>
+            <div id="method-filter-options" class="method-filter-options">
+                <!-- Checkboxes populated dynamically -->
+            </div>
+        </div>
+
+        <div id="status-filter-popup" class="status-filter-popup">
+            <div class="popup-header">
+                <span>Filter Status Codes</span>
+                <button class="popup-close-btn" onclick="closeStatusFilterPopup()">×</button>
+            </div>
+            <div id="status-filter-options" class="status-filter-options">
+                <!-- Checkboxes populated dynamically -->
+            </div>
+        </div>
+
+        <div id="filetype-filter-popup" class="filetype-filter-popup">
+            <div class="popup-header">
+                <span>Filter File Types</span>
+                <button class="popup-close-btn" onclick="closeFiletypeFilterPopup()">×</button>
+            </div>
+            <div id="filetype-filter-options" class="filetype-filter-options">
+                <!-- Checkboxes populated dynamically -->
+            </div>
+        </div>
+        
+        <div id="filter-overlay" class="filter-overlay" onclick="closeMethodFilterPopup(); closeStatusFilterPopup(); closeFiletypeFilterPopup();"></div>
+    </div>
+
+    <div id="requests"></div>
+
+    <div id="project-modal">
+        <div class="cyber-card project-card-split">
+            
+            <div class="project-panel-left">
+                <div class="cyber-header">
+                    <div class="cyber-icon-box" style="color: var(--color-purple);">
+                        <i class="fa-solid fa-folder-plus"></i>
+                    </div>
+                    <div class="cyber-title">
+                        <span>New Session</span>
+                        <span class="cyber-status">DEFINE SCOPE</span>
+                    </div>
+                </div>
+
+                <label class="cyber-label">Project Name</label>
+                <input type="text" id="project-name-input" class="cyber-input" placeholder="Enter Project Name..." autocomplete="off" autofocus>
+
+                <button id="create-project-btn" class="cyber-btn" style="border-color: var(--color-purple); color: var(--color-purple); margin-top: auto;">
+                    <i class="fa-solid fa-plus"></i> CREATE WORKSPACE
+                </button>
+                <p id="project-error" style="color: #f85149; display: none; margin-top: 10px; text-align: center; font-size: 12px;"></p>
+            </div>
+
+            <div class="project-divider"></div>
+
+            <div class="project-panel-right">
+                <div class="cyber-header" style="margin-bottom: 15px;">
+                    <div class="cyber-icon-box" style="color: var(--color-cyan-brand);">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div class="cyber-title">
+                        <span>Load Existing</span>
+                        <span class="cyber-status">SELECT FROM DATABASE</span>
+                    </div>
+                </div>
+
+                <div id="project-list-container" class="project-list-scroll">
+                    <div style="text-align: center; color: #8b949e; padding: 20px;">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+                
+                <p style="font-size: 11px; color: #555; text-align: center; margin-top: 10px;">
+                    Double-click a project to load session data.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="startup-modal">
+        <div class="cyber-card">
+            <span id="startup-close-btn" class="cyber-close-btn">&times;</span>
+            <div class="cyber-header">
+                <div class="cyber-icon-box">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </div>
+                <div class="cyber-title">
+                    <span>Initialize Target</span>
+                    <span class="cyber-status">STATUS: STANDBY</span>
+                </div>
+            </div>
+
+            <label class="cyber-label">Target URL</label>
+            <input type="text" id="target-url-input" class="cyber-input" placeholder="e.g. https://example.com" autocomplete="off">
+
+            <label class="cyber-label">Operation Mode</label>
+            <div class="mode-grid">
+                <label onmouseenter="showDesc('Single: Visits the URL once in headless mode to capture initial requests.')" 
+                       onmouseleave="clearDesc()">
+                    <input type="radio" name="crawl_mode" value="single" checked>
+                    <div class="mode-option">
+                        <i class="fa-solid fa-bullseye" style="display:block; margin-bottom:5px;"></i>
+                        SINGLE
+                    </div>
+                </label>
+                
+                <label onmouseenter="showDesc('Browser: Opens a visible Chrome window for manual interaction.')" 
+                       onmouseleave="clearDesc()">
+                    <input type="radio" name="crawl_mode" value="browser">
+                    <div class="mode-option">
+                        <i class="fa-brands fa-chrome" style="display:block; margin-bottom:5px;"></i>
+                        BROWSER
+                    </div>
+                </label>
+                
+                <label onmouseenter="showDesc('Crawler: Recursively scans the domain to find and visit all links.')" 
+                       onmouseleave="clearDesc()">
+                    <input type="radio" name="crawl_mode" value="crawl">
+                    <div class="mode-option">
+                        <i class="fa-solid fa-spider" style="display:block; margin-bottom:5px;"></i>
+                        CRAWLER
+                    </div>
+                </label>
+
+                <label onmouseenter="showDesc('Katana Pipe: Reads URLs from stdin (e.g., katana output) and visits them cleanly.')" 
+                    onmouseleave="clearDesc()">
+                    <input type="radio" name="crawl_mode" value="katana">
+                    <div class="mode-option">
+                        <i class="fa-solid fa-khanda" style="display:block; margin-bottom:5px;"></i>
+                        KATANA
+                    </div>
+                </label>
+            </div>
+
+            <div id="mode-description" class="cyber-info-box">
+                Hover over a mode to see details...
+            </div>
+
+            <button id="startup-btn" class="cyber-btn">
+                <i class="fa-solid fa-play"></i> LAUNCH INTERCEPTOR
+            </button>
+            
+            <p id="startup-status" style="text-align: center; color: #f85149; margin-top: 15px; display: none; font-size: 12px;"></p>
+        </div>
+    </div>
+
+    <div id="completion-modal" style="display: none; background-color: rgb(11 14 20 / 0%);">
+        <div class="cyber-card" style="width: 400px; border: 1px solid #30363d; box-shadow: 0 0 30px #30363d;">
+            <div class="cyber-header" style="margin-bottom: 15px; border-bottom: none;">
+                <div class="cyber-icon-box" style="color: #00e5ff; border: 1px solid #30363d;">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div class="cyber-title">
+                    <span style="color: #ffffff;">TASK COMPLETE</span>
+                    <span class="cyber-status" style="color: #8b949e;">SESSION FINISHED</span>
+                </div>
+            </div>
+            <p style="color: #c9d1d9; font-size: 13px; margin-bottom: 20px; text-align: center;">
+                The automated browsing session has ended.
+            </p>
+            <button onclick="closeCompletion()" class="cyber-btn" style="border-color: #00e5ff; color: #00e5ff;">
+                ACKNOWLEDGE
+            </button>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" style="display: none;">
+        <div class="cyber-card" style="width: 400px; border: 1px solid #30363d; box-shadow: 0 0 30px #30363d;">
+            <div class="cyber-header" style="margin-bottom: 15px; border-bottom: none;">
+                <div class="cyber-icon-box" style="color: #f85149; border: 1px solid #30363d;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="cyber-title">
+                    <span style="color: #ffffff;">CONFIRM DELETION</span>
+                    <span class="cyber-status" style="color: #f85149;">IRREVERSIBLE ACTION</span>
+                </div>
+            </div>
+            <p style="color: #c9d1d9; font-size: 13px; margin-bottom: 20px; text-align: center;">
+                Are you sure you want to delete this project? This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="closeDeleteConfirm()" class="cyber-btn" style="border-color: #8b949e; color: #8b949e; flex: 1;">
+                    CANCEL
+                </button>
+                <button id="confirm-delete-btn" class="cyber-btn" style="border-color: #f85149; color: #f85149; flex: 1;">
+                    DELETE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-header">
+                <h2 id="modal-title">Drana-Infinity:::Flow Details</h2>
+                <span id="modal-close-btn" class="modal-close">&times;</span>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="tab-button active" data-tab="tab-request">Request</button>
+                <button class="tab-button" data-tab="tab-response">Response</button>
+                <button class="tab-button" data-tab="tab-analysis" style="color: var(--color-purple-brand);">
+                    <i class="fa-solid fa-brain"></i> Analysis
+                </button>
+                <button class="tab-button" data-tab="tab-recon" style="color: var(--color-purple-brand);">
+                    <i class="fa fa-search"></i> Recon
+                </button>
+            </div>
+
+            <div class="modal-controls">
+                <div class="search-controls">
+                    <input type="text" id="search-input" placeholder="Search...">
+                    <button id="search-btn">Search</button>
+                    <button id="search-prev-btn">&lt;</button>
+                    <button id="search-next-btn">&gt;</button>
+                    <button id="search-clear-btn">Clear</button>
+                    <span id="search-count-label">0 / 0</span>
+                    <label><input type="checkbox" id="search-case-sensitive"> Case</label>
+                    <label><input type="checkbox" id="search-regex"> Regex</label>
+                </div>
+                <div class="action-controls">
+                    <button id="resend-btn" style="display: none;">Resend Request</button>
+                </div>
+            </div>
+
+            <div id="tab-request" class="tab-content active">
+                <pre id="modal-request-raw" contenteditable="true"></pre>
+            </div>
+
+            <div id="tab-response" class="tab-content">
+                <div class="render-controls">
+                    <button id="raw-btn">Raw</button>
+                    <button id="render-btn">Render</button>
+                </div>
+                <pre id="modal-response-raw"></pre>
+                <iframe id="modal-response-render" sandbox="allow-scripts allow-forms allow-popups allow-modals"></iframe>
+            </div>
+
+            <div id="tab-analysis" class="tab-content">
+                <div id="analysis-content-area">
+                     <div class="analysis-placeholder">
+                         <i class="fa-solid fa-microchip"></i>
+                         <p>Click to start analysis engine</p>
+                     </div>
+                </div>
+            </div>
+
+            <div id="tab-recon" class="tab-content">
+                <div id="recon-content-area">
+                     <div class="recon-placeholder">
+                         <i class="fa fa-search"></i>
+                         <p>Click to start recon engine</p>
+                     </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="resizer resizer-r"></div>
+        <div class="resizer resizer-b"></div>
+        <div class="resizer resizer-br"></div>
+    </div>
+
+    <div class="cyber-toolbar">
+        <div id="restart-toggle" title="Initialize New Target">
+            <i class="fa-solid fa-crosshairs"></i>
+        </div>
+        
+        <div class="toolbar-divider"></div>
+        
+        <div id="settings-toggle" title="Settings">
+            <i class="fa-solid fa-gear"></i> </div>
+    </div>
+
+    <div id="settings-modal">
+        <div class="settings-box">
+            <h3>Blacklist Domains</h3>
+            <p style="font-size:12px; color:#8b949e; margin-bottom:5px;">Enter domains to hide (one per line).</p>
+            <textarea id="blacklist-input" placeholder="*.google.com&#10;facebook.com"></textarea>
+            <div class="settings-controls">
+                <button onclick="closeSettings()">Cancel</button>
+                <button class="settings-btn-save" onclick="saveSettings()">Save & Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // This variable receives the ID from the URL (e.g., /interceptor/123-abc)
+    // If the URL is just /interceptor, this will be null/empty.
+    const SERVER_PROJECT_ID = "{{ initial_project_id if initial_project_id else '' }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/interceptor.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,443 @@
+[
+    {
+        "id": 1,
+        "tool_name": "nmap",
+        "version_command": "nmap --version",
+        "install_link": "https://nmap.org/",
+        "icon_class": "fa fa-network-wired",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 2,
+        "tool_name": "httpx",
+        "version_command": "httpx -version",
+        "install_link": "https://github.com/projectdiscovery/httpx",
+        "icon_class": "fa fa-search",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 3,
+        "tool_name": "webanalyze",
+        "version_command": "webanalyze --version",
+        "install_link": "https://github.com/urbanadventurer/WhatWeb",
+        "icon_class": "fa fa-search",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 4,
+        "tool_name": "wafw00f",
+        "version_command": "wafw00f --version",
+        "install_link": "https://github.com/EnableSecurity/wafw00f",
+        "icon_class": "fa fa-shield-alt",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 5,
+        "tool_name": "amass",
+        "version_command": "amass version",
+        "install_link": "https://github.com/owasp-amass/amass",
+        "icon_class": "fa fa-search",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 6,
+        "tool_name": "subfinder",
+        "version_command": "subfinder --version",
+        "install_link": "https://github.com/projectdiscovery/subfinder",
+        "icon_class": "fa fa-search",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 7,
+        "tool_name": "assetfinder",
+        "version_command": "assetfinder --version",
+        "install_link": "https://github.com/tomnomnom/assetfinder",
+        "icon_class": "fa fa-search",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 8,
+        "tool_name": "dnsx",
+        "version_command": "dnsx -version",
+        "install_link": "https://github.com/projectdiscovery/dnsx",
+        "icon_class": "fa fa-search",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 9,
+        "tool_name": "gobuster",
+        "version_command": "gobuster version",
+        "install_link": "https://github.com/OJ/gobuster",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 10,
+        "tool_name": "ffuf",
+        "version_command": "ffuf -V",
+        "install_link": "https://github.com/ffuf/ffuf",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 11,
+        "tool_name": "dirsearch",
+        "version_command": "dirsearch --version",
+        "install_link": "https://github.com/maurosoria/dirsearch",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 12,
+        "tool_name": "feroxbuster",
+        "version_command": "feroxbuster -V",
+        "install_link": "https://github.com/epi052/feroxbuster",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 13,
+        "tool_name": "gospider",
+        "version_command": "gospider -v",
+        "install_link": "https://github.com/jaeles-project/gospider",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 14,
+        "tool_name": "hakrawler",
+        "version_command": "hakrawler --version",
+        "install_link": "https://github.com/hakluke/hakrawler",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 15,
+        "tool_name": "katana",
+        "version_command": "katana -version",
+        "install_link": "https://github.com/projectdiscovery/katana",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 16,
+        "tool_name": "kiterunner",
+        "version_command": "kr version",
+        "install_link": "https://github.com/assetnote/kiterunner",
+        "icon_class": "fa fa-folder-open",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 17,
+        "tool_name": "waybackurls",
+        "version_command": "waybackurls --version",
+        "install_link": "https://github.com/tomnomnom/waybackurls",
+        "icon_class": "fa fa-link",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 18,
+        "tool_name": "gau",
+        "version_command": "gau --version",
+        "install_link": "https://github.com/lc/gau",
+        "icon_class": "fa fa-link",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 19,
+        "tool_name": "linkfinder",
+        "version_command": "python3 linkfinder.py --version",
+        "install_link": "https://github.com/GerbenJavado/LinkFinder",
+        "icon_class": "fa fa-link",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 20,
+        "tool_name": "getjs",
+        "version_command": "getJS --version",
+        "install_link": "https://github.com/003random/getJS",
+        "icon_class": "fa fa-link",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 21,
+        "tool_name": "jsluice",
+        "version_command": "jsluice version",
+        "install_link": "https://github.com/BishopFox/jsluice",
+        "icon_class": "fa fa-link",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 22,
+        "tool_name": "arjun",
+        "version_command": "python3 arjun.py --version",
+        "install_link": "https://github.com/s0md3v/Arjun",
+        "icon_class": "fa fa-cog",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 23,
+        "tool_name": "paramspider",
+        "version_command": "python3 paramspider.py --version",
+        "install_link": "https://github.com/devanshbatham/ParamSpider",
+        "icon_class": "fa fa-cog",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 24,
+        "tool_name": "x8",
+        "version_command": "x8 --version",
+        "install_link": "https://github.com/Sh1Yo/x8",
+        "icon_class": "fa fa-cog",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 25,
+        "tool_name": "param-miner",
+        "version_command": "param-miner --version",
+        "install_link": "https://github.com/PortSwigger/param-miner",
+        "icon_class": "fa fa-cog",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 26,
+        "tool_name": "wfuzz",
+        "version_command": "wfuzz --version",
+        "install_link": "https://github.com/xmendez/wfuzz",
+        "icon_class": "fa fa-bug",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 27,
+        "tool_name": "fuzzapi",
+        "version_command": "fuzzapi --version",
+        "install_link": "https://github.com/Fuzzapi/fuzzapi",
+        "icon_class": "fa fa-bug",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 28,
+        "tool_name": "qsfuzz",
+        "version_command": "qsfuzz -version",
+        "install_link": "https://github.com/ameenmaali/qsfuzz",
+        "icon_class": "fa fa-bug",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 29,
+        "tool_name": "eyewitness",
+        "version_command": "python EyeWitness.py --version",
+        "install_link": "https://github.com/FortyNorthSecurity/EyeWitness",
+        "icon_class": "fa fa-camera",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 30,
+        "tool_name": "aquatone",
+        "version_command": "aquatone --version",
+        "install_link": "https://github.com/michenriksen/aquatone",
+        "icon_class": "fa fa-camera",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 31,
+        "tool_name": "witnessme",
+        "version_command": "gowitness version",
+        "install_link": "https://github.com/sensepost/gowitness",
+        "icon_class": "fa fa-camera",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 32,
+        "tool_name": "nikto",
+        "version_command": "nikto -Version",
+        "install_link": "https://github.com/sullo/nikto",
+        "icon_class": "fa fa-shield-alt",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 33,
+        "tool_name": "nuclei",
+        "version_command": "nuclei -version",
+        "install_link": "https://github.com/projectdiscovery/nuclei",
+        "icon_class": "fa fa-shield-alt",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 34,
+        "tool_name": "skipfish",
+        "version_command": "skipfish --version",
+        "install_link": "https://code.google.com/archive/p/skipfish/",
+        "icon_class": "fa fa-shield-alt",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 35,
+        "tool_name": "wapiti",
+        "version_command": "wapiti --version",
+        "install_link": "https://github.com/wapiti-scanner/wapiti",
+        "icon_class": "fa fa-shield-alt",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 36,
+        "tool_name": "w3af",
+        "version_command": "w3af.py --version",
+        "install_link": "https://github.com/andresriancho/w3af",
+        "icon_class": "fa fa-shield-alt",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 37,
+        "tool_name": "retire.js",
+        "version_command": "retire --version",
+        "install_link": "https://github.com/RetireJS/retire.js",
+        "icon_class": "fa fa-shield-alt",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 38,
+        "tool_name": "sqlmap",
+        "version_command": "sqlmap --version",
+        "install_link": "https://sqlmap.org/",
+        "icon_class": "fa fa-database",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 39,
+        "tool_name": "commix",
+        "version_command": "commix --version",
+        "install_link": "https://github.com/commixproject/commix",
+        "icon_class": "fa fa-terminal",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 40,
+        "tool_name": "crlfuzz",
+        "version_command": "crlfuzz -V",
+        "install_link": "https://github.com/dwisiswant0/crlfuzz",
+        "icon_class": "fa fa-exclamation-triangle",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 41,
+        "tool_name": "corsy",
+        "version_command": "corsy --version",
+        "install_link": "https://github.com/s0md3v/Corsy",
+        "icon_class": "fa fa-exclamation-triangle",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 42,
+        "tool_name": "xsstrike",
+        "version_command": "python3 XSStrike.py --version",
+        "install_link": "https://github.com/s0md3v/XSStrike",
+        "icon_class": "fa fa-exclamation-triangle",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 43,
+        "tool_name": "graphqlmap",
+        "version_command": "graphqlmap --version",
+        "install_link": "https://github.com/swisskyrepo/GraphQLmap",
+        "icon_class": "fa fa-exclamation-triangle",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 44,
+        "tool_name": "jwt_tool",
+        "version_command": "python3 jwt_tool.py --version",
+        "install_link": "https://github.com/ticarpi/jwt_tool",
+        "icon_class": "fa fa-exclamation-triangle",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 45,
+        "tool_name": "gitjacker",
+        "version_command": "gitjacker --version",
+        "install_link": "https://github.com/liamg/gitjacker",
+        "icon_class": "fa fa-exclamation-triangle",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 46,
+        "tool_name": "recon-ng",
+        "version_command": "recon-ng --version",
+        "install_link": "https://github.com/lanmaster53/recon-ng",
+        "icon_class": "fa fa-sitemap",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 47,
+        "tool_name": "wpscan",
+        "version_command": "wpscan --version",
+        "install_link": "https://github.com/wpscanteam/wpscan",
+        "icon_class": "fa fa-wordpress",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 48,
+        "tool_name": "hydra",
+        "version_command": "hydra -V",
+        "install_link": "https://github.com/vanhauser-thc/thc-hydra",
+        "icon_class": "fa fa-key",
+        "is_installed": false,
+        "detected_version": null
+    },
+    {
+        "id": 49,
+        "tool_name": "curl",
+        "version_command": "curl --version",
+        "install_link": "https://curl.se/",
+        "icon_class": "fa fa-globe",
+        "is_installed": false,
+        "detected_version": null
+    }
+]

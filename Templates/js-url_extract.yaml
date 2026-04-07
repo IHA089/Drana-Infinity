@@ -1,0 +1,28 @@
+id: js-url-extract
+
+info:
+  name: JavaScript URL & Endpoint Extractor
+  author: IHA089
+  severity: info
+  description: Extracts all URLs and paths from JavaScript files
+
+file:
+  - extensions:
+      - js
+
+    extractors:
+      - type: regex
+        name: full_urls
+        regex:
+          - '(https?:\/\/[a-zA-Z0-9\-._~:\/?#\[\]@!$&''()*+,;=%]+)'
+
+      - type: regex
+        name: absolute_paths
+        regex:
+          - '(["''])(\/[a-zA-Z0-9_\-./]+)\1'
+
+      - type: regex
+        name: relative_paths
+        regex:
+          - '(["''])(\.\.?\/[a-zA-Z0-9_\-./]+)\1'
+
